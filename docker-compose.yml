@@ -1,0 +1,46 @@
+version: "3"
+services:
+  mongo:
+    image: "mongo:latest"
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: songhanpoo
+      MONGO_INITDB_ROOT_PASSWORD: "m0ng0db_p4ssw0rd"
+  redis:
+    image: "redis:latest"
+    command: redis-server --requirepass r3d1s_p4ssw0rd
+    ports:
+      - "6379:6379"
+  server:
+    ports:
+      - "5194:3000"
+    build:
+      dockerfile: Dockerfile
+      context: ./
+      target: dev
+    volumes:
+      - .:/app
+    environment:
+      - MONGO_USER=songhanpoo
+      - MONGO_PWD=m0ng0db_p4ssw0rd
+      - MONGO_HOST=mongo
+      - MONGO_PORT=27017
+      - MONGO_DBNAME=admin
+      - REDIS_PORT=6379
+      - REDIS_HOST=redis
+      - REDIS_PWD=r3d1s_p4ssw0rd
+      - SECRET_TOKEN=s0m3-s3cr3t-t0k3n-h3r3
+      - SECRET_REFRESHTOKEN=s0m3-r3r3fr3sh-s3cr3t-t0k3n-h3r3
+      - TOKEN_LIFE=50000
+      - REFRESHTOKEN_LIFE=86400
+      - APP_PORT=3000
+    depends_on:
+      - mongo
+      - redis
+
+# volumes:
+#   src:
+#   - type: bind
+#     source: /Users/songhanpoo/Desktop/DEV/Nodejs/graphql/graphql-api
+#     target: /app
