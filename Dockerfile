@@ -9,13 +9,20 @@ WORKDIR /app
 # copy both 'package.json' and 'package-lock.json' (if available)
 COPY package*.json ./
 RUN yarn
-ONBUILD ADD . .
-FROM base AS dev
+
+FROM base as dev
 RUN apk add --no-cache bash curl busybox-extras
 CMD ["yarn","dev"]
 
+# prod
+FROM node:14.15.4-alpine3.10 as build
+COPY package*.json ./
+RUN yarn
+ONBUILD ADD . .
+
 FROM base AS builder
 RUN yarn run build
+
 FROM nginx:1.16.0-alpine as prod
 RUN rm  /usr/share/nginx/html/*
 COPY --from=builder /app/dist /usr/share/nginx/html
