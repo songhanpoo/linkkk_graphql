@@ -9,7 +9,7 @@ WORKDIR /app
 # copy both 'package.json' and 'package-lock.json' (if available)
 COPY package*.json ./
 RUN yarn
-
+ONBUILD ADD . .
 FROM base AS dev
 RUN apk add --no-cache bash curl busybox-extras
 CMD ["yarn","dev"]
